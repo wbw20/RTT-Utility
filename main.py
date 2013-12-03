@@ -6,15 +6,15 @@ import struct
 UDP_PROTOCOL_ID = 17 # RFC 768
 
 def checksum(packet):
-  """Calculate the checksum of the combined UDP and IP pseudoheader according to RFC 768."""
+  """Add up the 1's compliment of the sum of 1's compliments for the packet"""
 
   sum = 0
 
   for x in packet:
-    sum = sum + x
+    sum = sum + ~x
     sum = sum & 0xffffffff
 
-  return sum
+  return ~sum
 
 def to_i(ip):
   """Convert an ip address string to an int"""
