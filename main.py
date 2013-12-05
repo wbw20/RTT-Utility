@@ -1,36 +1,44 @@
 #!/usr/local/bin/python
 
 import socket
-import struct
 
-UDP_PROTOCOL_ID = 17 # RFC 768
+def main(dest_name):
+    dest_addr = socket.gethostbyname(dest_name)
+    port = 33434
+    max_hops = 30
+    icmp = socket.getprotobyname('icmp')
+    udp = socket.getprotobyname('udp')
+    ttl = 1
+    while True:
+        recv_socket = socket.socket(socket.AF_INET, socket.SOCK_RAW, icmp)
+        send_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, udp)
+        send_socket.setsockopt(socket.SOL_IP, socket.IP_TTL, ttl)
+        recv_socket.bind(("", port))
+        send_socket.sendto("", (dest_name, port))
+        curr_addr = None
+        curr_name = None
+        try:
+            _, curr_addr = recv_socket.recvfrom(512)
+            curr_addr = curr_addr[0]
+            try:
+                curr_name = socket.gethostbyaddr(curr_addr)[0]
+            except socket.error:
+                curr_name = curr_addr
+        except socket.error:
+            pass
+        finally:
+            send_socket.close()
+            recv_socket.close()
 
-def checksum(packet):
-  """Add up the 1's compliment of the sum of 1's compliments for the packet"""
+        if curr_addr is not None:
+            curr_host = "%s (%s)" % (curr_name, curr_addr)
+        else:
+            curr_host = "*"
+        print "%d\t%s" % (ttl, curr_host)
 
-  sum = 0
+        ttl += 1
+        if curr_addr == dest_addr or ttl >= max_hops:
+            break
 
-  for x in packet:
-    sum = sum + ~x
-    sum = sum & 0xffffffff
-
-  return ~sum
-
-def to_i(ip):
-  """Convert an ip address string to an int"""
-  return int(''.join([bin(int(x)+256)[3:] for x in ip.split('.')]))
-
-def create_packet(source, dest):
-  """Creates a no-data UDP packet for the given source and destination."""
-
-  # Pseudo header
-  # source (32), destination (32), protocol (16), length (16)
-  pseudo = [to_i(source), to_i(dest), UDP_PROTOCOL_ID, 8]
-
-  return [to_i(source), to_i(dest), 8, checksum(pseudo)]
-
-def ping(dest):
-  print 'unused'
-
-if __name__ == '__main__':
-  print create_packet('192.168.1.1', '64.233.191.255')
+if __name__ == "__main__":
+    main('www.case.edu')
