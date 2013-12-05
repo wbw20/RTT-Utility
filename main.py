@@ -8,6 +8,7 @@ ICMP_CODE = socket.getprotobyname('icmp')
 UDP_CODE = socket.getprotobyname('udp')
 
 def ping(dest_name, ttl=30, port=33434):
+    print ttl
     inn = socket.socket(socket.AF_INET, socket.SOCK_RAW, ICMP_CODE)
     out = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, UDP_CODE)
     out.setsockopt(socket.SOL_IP, socket.IP_TTL, ttl)
@@ -37,7 +38,7 @@ def ping(dest_name, ttl=30, port=33434):
     return curr_addr
 
 def binary_search(host):
-    ttl = 64 # arbitrary
+    ttl = MAX_HOPS / 2
 
     current = ping(host, ttl)
 
