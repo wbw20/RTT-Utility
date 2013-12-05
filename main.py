@@ -3,6 +3,7 @@
 import socket
 
 MAX_HOPS = 128
+TIMEOUT = 5 # seconds
 ICMP_CODE = socket.getprotobyname('icmp')
 UDP_CODE = socket.getprotobyname('udp')
 
@@ -11,6 +12,7 @@ def ping(dest_name, ttl=30, port=33434):
     out = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, UDP_CODE)
     out.setsockopt(socket.SOL_IP, socket.IP_TTL, ttl)
     inn.bind(("", port))
+    inn.settimeout(TIMEOUT)
     out.sendto("", (dest_name, port))
     curr_addr = None
     curr_name = None
