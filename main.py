@@ -6,7 +6,7 @@ MAX_HOPS = 30
 ICMP_CODE = socket.getprotobyname('icmp')
 UDP_CODE = socket.getprotobyname('udp')
 
-def ping(dest_name, ttl=1, port=33434):
+def ping(dest_name, ttl=30, port=33434):
     inn = socket.socket(socket.AF_INET, socket.SOCK_RAW, ICMP_CODE)
     out = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, UDP_CODE)
     out.setsockopt(socket.SOL_IP, socket.IP_TTL, ttl)
@@ -28,10 +28,9 @@ def ping(dest_name, ttl=1, port=33434):
         inn.close()
 
     if curr_addr is not None:
-        curr_host = "%s (%s)" % (curr_name, curr_addr)
+        print "%s (%s)" % (curr_name, curr_addr)
     else:
-        curr_host = "*"
-    print "%d\t%s" % (ttl, curr_host)
+        print "*"
 
     return curr_addr
 
