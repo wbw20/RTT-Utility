@@ -2,7 +2,7 @@
 
 import socket
 
-MAX_HOPS = 30
+MAX_HOPS = 128
 ICMP_CODE = socket.getprotobyname('icmp')
 UDP_CODE = socket.getprotobyname('udp')
 
@@ -34,16 +34,32 @@ def ping(dest_name, ttl=30, port=33434):
 
     return curr_addr
 
+def binary_search(host):
+    ttl = 64 # arbitrary
 
-def main(dest_name):
-    dest_addr = socket.gethostbyname(dest_name)
-    ttl = 1
+    current = ping(host, ttl)
 
-    while True:
-        curr_addr = ping(dest_name, ttl)
-        ttl += 1
-        if curr_addr == dest_addr or ttl >= MAX_HOPS:
-            return
+    while current != host:
+        if current == None: # too high
+            ttl /= 2
+        else: # too low
+            ttl += (MAX_HOPS - ttl)/2
+
+        current = ping(host, ttl) # try again
+
+
+
+
+def main(host):
+    dest = socket.gethostbyname(host)
+    binary_search(dest)
+    # ttl = 1
+
+    # while True:
+    #     curr_addr = ping(dest_name, ttl)
+    #     ttl += 1
+    #     if curr_addr == dest or ttl >= MAX_HOPS:
+    #         return
 
 if __name__ == "__main__":
     main('www.mit.edu')
