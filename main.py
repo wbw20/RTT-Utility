@@ -2,20 +2,20 @@
 
 import socket
 
-max_hops = 30
-icmp = socket.getprotobyname('icmp')
-udp = socket.getprotobyname('udp')
+MAX_HOPS = 30
+ICMP_CODE = socket.getprotobyname('icmp')
+UDP_CODE = socket.getprotobyname('udp')
 
 def ping(dest_name, ttl=1, port=33434):
-    recv_socket = socket.socket(socket.AF_INET, socket.SOCK_RAW, icmp)
-    send_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, udp)
-    send_socket.setsockopt(socket.SOL_IP, socket.IP_TTL, ttl)
-    recv_socket.bind(("", port))
-    send_socket.sendto("", (dest_name, port))
+    inn = socket.socket(socket.AF_INET, socket.SOCK_RAW, ICMP_CODE)
+    out = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, UDP_CODE)
+    out.setsockopt(socket.SOL_IP, socket.IP_TTL, ttl)
+    inn.bind(("", port))
+    out.sendto("", (dest_name, port))
     curr_addr = None
     curr_name = None
     try:
-        _, curr_addr = recv_socket.recvfrom(512)
+        _, curr_addr = inn.recvfrom(512)
         curr_addr = curr_addr[0]
         try:
             curr_name = socket.gethostbyaddr(curr_addr)[0]
@@ -24,8 +24,8 @@ def ping(dest_name, ttl=1, port=33434):
     except socket.error:
         pass
     finally:
-        send_socket.close()
-        recv_socket.close()
+        out.close()
+        inn.close()
 
     if curr_addr is not None:
         curr_host = "%s (%s)" % (curr_name, curr_addr)
@@ -43,8 +43,8 @@ def main(dest_name):
     while True:
         curr_addr = ping(dest_name, ttl)
         ttl += 1
-        if curr_addr == dest_addr or ttl >= max_hops:
-            break
+        if curr_addr == dest_addr or ttl >= MAX_HOPS:
+            return
 
 if __name__ == "__main__":
-    main('www.case.edu')
+    main('www.mit.edu')
