@@ -1,8 +1,9 @@
 #!/usr/local/bin/python
 
 import socket
+import re
 
-MAX_HOPS = 128
+MAX_HOPS = 16
 TIMEOUT = 5 # seconds
 ICMP_CODE = socket.getprotobyname('icmp')
 UDP_CODE = socket.getprotobyname('udp')
@@ -38,23 +39,26 @@ def ping(dest_name, ttl=30, port=33434):
     return curr_addr
 
 def binary_search(host):
-    ttl = MAX_HOPS / 2
+    low = 0
+    high = MAX_HOPS
 
-    current = ping(host, ttl)
+    while low < high:
+        ttl = high - (high - low)/2
+        current = ping(host, ttl) # try reaching host with ttl number of hops
 
-    while current != host:
-        if current == None: # too high
-            ttl /= 2
-        else: # too low
-            ttl += (MAX_HOPS - ttl)/2
+        print current
+        print 'JKBDSKJFBDSKBFJ'
 
-        current = ping(host, ttl) # try again
-
-
-
+        if current == None: # ttl too high
+            high = ttl
+        elif current.find(host) != -1: # ttl just right
+            return;
+        else: # ttl too low
+            low = ttl
 
 def main(host):
     dest = socket.gethostbyname(host)
+    print dest
     binary_search(dest)
     # ttl = 1
 
