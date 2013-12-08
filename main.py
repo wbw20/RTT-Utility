@@ -2,9 +2,10 @@
 
 import socket
 import re
+from math import ceil
 
-MAX_HOPS = 16
-TIMEOUT = 5 # seconds
+MAX_HOPS = 32
+TIMEOUT = 4 # seconds
 ICMP_CODE = socket.getprotobyname('icmp')
 UDP_CODE = socket.getprotobyname('udp')
 
@@ -35,9 +36,14 @@ def ping(dest_name, ttl=30, port=33434):
 def count_hops_to(host):
     low = 0
     high = MAX_HOPS
+    ttl = 0
 
     while low < high:
-        ttl = high - (high - low)/2
+        if ttl == (high + low)/2:
+          break # don't run the same ttl twice
+        else:
+          ttl = (high + low)/2
+
         current = ping(host, ttl) # try reaching host with ttl number of hops
 
         if current == None: # ttl too high
@@ -47,7 +53,7 @@ def count_hops_to(host):
         else: # ttl too low
             low = ttl
 
-    return -1
+    return low
 
 def main(host):
     dest = socket.gethostbyname(host)
