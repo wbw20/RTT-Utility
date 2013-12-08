@@ -52,7 +52,7 @@ def ping(host, ttl=30, port=33434):
 
 def count_hops_to(host):
     """
-    User binary search to find the number of hops to
+    Use binary search to find the number of hops to
     a given ip address.
     """
 
