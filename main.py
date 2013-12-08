@@ -70,5 +70,7 @@ def main(host):
     print "Hops to %s (%s)" % (host, count)
     print "RTT to %s (%sms)" % (host, time)
 
+# run my trace and ping on each domain I was given in class
 if __name__ == "__main__":
-    main('zendesk.com')
+    for domain in ['ebay.com', 'amazon.cn', 'rednet.cn', 'pornup.me', 'songofstyle.com', 'zackdougherty.com']:
+        main(domain)
