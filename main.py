@@ -2,7 +2,6 @@
 
 import socket
 import time
-import re
 from math import ceil
 
 MAX_HOPS = 32
