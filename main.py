@@ -68,7 +68,7 @@ def main(host):
     time = rtt_to(dest, count)
 
     print "Hops to %s (%s)" % (host, count)
-    print "RTT to %s (%sms)" % (host, time)
+    print "RTT to %s (%sms)\n" % (host, time)
 
 # run my trace and ping on each domain I was given in class
 if __name__ == "__main__":
