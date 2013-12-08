@@ -5,7 +5,7 @@ import time
 from math import ceil
 
 MAX_HOPS = 32
-TIMEOUT = 4 # seconds
+TIMEOUT = 2 # seconds
 ICMP_CODE = socket.getprotobyname('icmp')
 UDP_CODE = socket.getprotobyname('udp')
 
