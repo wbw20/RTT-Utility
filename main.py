@@ -15,11 +15,11 @@ def ping(dest_name, ttl=30, port=33434):
     inn = socket.socket(socket.AF_INET, socket.SOCK_RAW, ICMP_CODE)
     out = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, UDP_CODE)
     out.setsockopt(socket.SOL_IP, socket.IP_TTL, ttl)
-    inn.bind(("", port))
+    inn.bind(('', port))
     inn.settimeout(TIMEOUT)
     start = time.time()
     end = time.time() + TIMEOUT
-    out.sendto("", (dest_name, port))
+    out.sendto('', (dest_name, port))
     curr_addr = None
     curr_name = None
     try:
@@ -102,11 +102,11 @@ def compute(host):
     time = rtt_to(dest, count)
     geo = geo_to(dest)
 
-    print "Hops to %s (%s)" % (host, count)
-    print "RTT to %s (%s ms)" % (host, time)
-    print "Distance to %s (%s km)\n" % (host, geo)
+    print 'Hops to %s (%s)' % (host, count)
+    print 'RTT to %s (%s ms)' % (host, time)
+    print 'Distance to %s (%s km)\n' % (host, geo)
 
 # run my trace and ping on each domain I was given in class
-if __name__ == "__main__":
+if __name__ == '__main__':
     for domain in ['ebay.com', 'amazon.cn', 'zendesk.com', 'toolband.com', 'att.com', 'rednet.cn', 'pornup.me', 'songofstyle.com', 'zackdougherty.com']:
         compute(domain)
