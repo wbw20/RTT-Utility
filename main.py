@@ -12,6 +12,11 @@ ICMP_CODE = socket.getprotobyname('icmp')
 UDP_CODE = socket.getprotobyname('udp')
 
 def ping(dest_name, ttl=30, port=33434):
+    """
+    Send a UDP probe to a given ip address and return
+    the ICMP response.
+    """
+
     inn = socket.socket(socket.AF_INET, socket.SOCK_RAW, ICMP_CODE)
     out = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, UDP_CODE)
     out.setsockopt(socket.SOL_IP, socket.IP_TTL, ttl)
@@ -39,6 +44,11 @@ def ping(dest_name, ttl=30, port=33434):
     return curr_addr, round((end - start)*1000)
 
 def count_hops_to(host):
+    """
+    User binary search to find the number of hops to
+    a given ip address.
+    """
+
     low = 0
     high = MAX_HOPS
     ttl = 0
@@ -61,10 +71,18 @@ def count_hops_to(host):
     return low
 
 def rtt_to(host, ttl):
+    """
+    Return the round trip duration to an ip address.
+    """
+
     _, rtt = ping(host, ttl)
     return int(rtt)
 
 def geo_to(host):
+    """
+    Return the geographic distance to an ip address in km.
+    """
+
     conn = httplib.HTTPConnection('freegeoip.net')
 
     conn.request('GET', '/json/%s' % (host))
@@ -80,8 +98,9 @@ def geo_to(host):
 def haversine(lon1, lat1, lon2, lat2):
     """
     Calculate the great circle distance between two points 
-    on the earth (specified in decimal degrees)
+    on the earth (specified in decimal degrees).
     """
+
     # convert decimal degrees to radians 
     lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
 
@@ -97,6 +116,12 @@ def haversine(lon1, lat1, lon2, lat2):
 
 
 def compute(host):
+    """
+    Compute the number of hops, round trip duration, and
+    geographic distance to a given host and print out the
+    results.
+    """
+
     dest = socket.gethostbyname(host)
     count = count_hops_to(dest)
     time = rtt_to(dest, count)
