@@ -11,23 +11,30 @@ TIMEOUT = 2 # seconds
 ICMP_CODE = socket.getprotobyname('icmp')
 UDP_CODE = socket.getprotobyname('udp')
 
-def ping(dest_name, ttl=30, port=33434):
+def ping(host, ttl=30, port=33434):
     """
     Send a UDP probe to a given ip address and return
-    the ICMP response.
+    the ICMP response and round trip duration.
     """
 
+    # sockets for sending udp and recieveing icmp
     inn = socket.socket(socket.AF_INET, socket.SOCK_RAW, ICMP_CODE)
     out = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, UDP_CODE)
+
     out.setsockopt(socket.SOL_IP, socket.IP_TTL, ttl)
     inn.bind(('', port))
     inn.settimeout(TIMEOUT)
+
+    # for use in calculating RTT
     start = time.time()
     end = time.time() + TIMEOUT
-    out.sendto('', (dest_name, port))
+
+    # send udp probe
+    out.sendto('', (host, port))
     curr_addr = None
     curr_name = None
     try:
+        # attempt to read icmp response
         _, curr_addr = inn.recvfrom(512)
         end = time.time()
         curr_addr = curr_addr[0]
