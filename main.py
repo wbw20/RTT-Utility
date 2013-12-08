@@ -62,7 +62,7 @@ def count_hops_to(host):
 
 def rtt_to(host, ttl):
   _, rtt = ping(host, ttl)
-  return rtt
+  return int(rtt)
 
 def geo_to(host):
   conn = httplib.HTTPConnection('freegeoip.net')
@@ -96,7 +96,7 @@ def haversine(lon1, lat1, lon2, lat2):
   return int(km)
 
 
-def main(host):
+def compute(host):
     dest = socket.gethostbyname(host)
     count = count_hops_to(dest)
     time = rtt_to(dest, count)
@@ -109,4 +109,4 @@ def main(host):
 # run my trace and ping on each domain I was given in class
 if __name__ == "__main__":
     for domain in ['ebay.com', 'amazon.cn', 'zendesk.com', 'toolband.com', 'att.com', 'rednet.cn', 'pornup.me', 'songofstyle.com', 'zackdougherty.com']:
-        main(domain)
+        compute(domain)
