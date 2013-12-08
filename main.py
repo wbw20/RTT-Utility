@@ -4,7 +4,7 @@ import socket
 import time
 import httplib
 import json
-from math import ceil
+from math import ceil, radians, cos, sin, asin, sqrt
 
 MAX_HOPS = 32
 TIMEOUT = 2 # seconds
@@ -74,20 +74,37 @@ def geo_to(host):
   me =  json.loads(conn.getresponse().read())
 
   conn.close()
-  print res['latitude']
-  print res['longitude']
-  print me['latitude']
-  print me['longitude']
+  return haversine(float(res['latitude']), float(res['longitude']), float(me['latitude']), float(me['longitude']))
+
+# This method is by Ross Allen, @ssorallen on github
+def haversine(lon1, lat1, lon2, lat2):
+  """
+  Calculate the great circle distance between two points 
+  on the earth (specified in decimal degrees)
+  """
+  # convert decimal degrees to radians 
+  lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+
+  # haversine formula 
+  dlon = lon2 - lon1 
+  dlat = lat2 - lat1 
+  a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+  c = 2 * asin(sqrt(a)) 
+
+  # 6367 km is the radius of the Earth
+  km = 6367 * c
+  return int(km)
 
 
 def main(host):
     dest = socket.gethostbyname(host)
     count = count_hops_to(dest)
     time = rtt_to(dest, count)
-    dist = geo_to(dest)
+    geo = geo_to(dest)
 
     print "Hops to %s (%s)" % (host, count)
-    print "RTT to %s (%sms)\n" % (host, time)
+    print "RTT to %s (%s ms)" % (host, time)
+    print "Distance to %s (%s km)\n" % (host, geo)
 
 # run my trace and ping on each domain I was given in class
 if __name__ == "__main__":
