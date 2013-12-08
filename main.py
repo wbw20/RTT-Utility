@@ -2,6 +2,8 @@
 
 import socket
 import time
+import httplib
+import json
 from math import ceil
 
 MAX_HOPS = 32
@@ -62,10 +64,27 @@ def rtt_to(host, ttl):
   _, rtt = ping(host, ttl)
   return rtt
 
+def geo_to(host):
+  conn = httplib.HTTPConnection('freegeoip.net')
+
+  conn.request('GET', '/json/%s' % (host))
+  res =  json.loads(conn.getresponse().read())
+
+  conn.request('GET', '/json/')
+  me =  json.loads(conn.getresponse().read())
+
+  conn.close()
+  print res['latitude']
+  print res['longitude']
+  print me['latitude']
+  print me['longitude']
+
+
 def main(host):
     dest = socket.gethostbyname(host)
     count = count_hops_to(dest)
     time = rtt_to(dest, count)
+    dist = geo_to(dest)
 
     print "Hops to %s (%s)" % (host, count)
     print "RTT to %s (%sms)\n" % (host, time)
