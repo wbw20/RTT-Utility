@@ -72,5 +72,5 @@ def main(host):
 
 # run my trace and ping on each domain I was given in class
 if __name__ == "__main__":
-    for domain in ['ebay.com', 'amazon.cn', 'rednet.cn', 'pornup.me', 'songofstyle.com', 'zackdougherty.com']:
+    for domain in ['ebay.com', 'amazon.cn', 'zendesk.com', 'toolband.com', 'att.com', 'rednet.cn', 'pornup.me', 'songofstyle.com', 'zackdougherty.com']:
         main(domain)
