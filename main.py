@@ -1,6 +1,7 @@
 #!/usr/local/bin/python
 
 import socket
+import time
 import re
 from math import ceil
 
@@ -15,11 +16,14 @@ def ping(dest_name, ttl=30, port=33434):
     out.setsockopt(socket.SOL_IP, socket.IP_TTL, ttl)
     inn.bind(("", port))
     inn.settimeout(TIMEOUT)
+    start = time.time()
+    end = time.time() + TIMEOUT
     out.sendto("", (dest_name, port))
     curr_addr = None
     curr_name = None
     try:
         _, curr_addr = inn.recvfrom(512)
+        end = time.time()
         curr_addr = curr_addr[0]
         try:
             curr_name = socket.gethostbyaddr(curr_addr)[0]
@@ -31,7 +35,7 @@ def ping(dest_name, ttl=30, port=33434):
         out.close()
         inn.close()
 
-    return curr_addr
+    return curr_addr, round((end - start)*1000)
 
 def count_hops_to(host):
     low = 0
@@ -44,7 +48,7 @@ def count_hops_to(host):
         else:
           ttl = (high + low)/2
 
-        current = ping(host, ttl) # try reaching host with ttl number of hops
+        current, _ = ping(host, ttl) # try reaching host with ttl number of hops
 
         if current == None: # ttl too high
             high = ttl
@@ -55,11 +59,17 @@ def count_hops_to(host):
 
     return low
 
+def rtt_to(host, ttl):
+  _, rtt = ping(host, ttl)
+  return rtt
+
 def main(host):
     dest = socket.gethostbyname(host)
     count = count_hops_to(dest)
+    time = rtt_to(dest, count)
 
     print "Hops to %s (%s)" % (host, count)
+    print "RTT to %s (%sms)" % (host, time)
 
 if __name__ == "__main__":
-    main('google.com')
+    main('zendesk.com')
