@@ -45,9 +45,9 @@ def count_hops_to(host):
 
     while low < high:
         if ttl == (high + low)/2:
-          break # don't run the same ttl twice
+            break # don't run the same ttl twice
         else:
-          ttl = (high + low)/2
+            ttl = (high + low)/2
 
         current, _ = ping(host, ttl) # try reaching host with ttl number of hops
 
@@ -61,39 +61,39 @@ def count_hops_to(host):
     return low
 
 def rtt_to(host, ttl):
-  _, rtt = ping(host, ttl)
-  return int(rtt)
+    _, rtt = ping(host, ttl)
+    return int(rtt)
 
 def geo_to(host):
-  conn = httplib.HTTPConnection('freegeoip.net')
+    conn = httplib.HTTPConnection('freegeoip.net')
 
-  conn.request('GET', '/json/%s' % (host))
-  res =  json.loads(conn.getresponse().read())
+    conn.request('GET', '/json/%s' % (host))
+    res =  json.loads(conn.getresponse().read())
 
-  conn.request('GET', '/json/')
-  me =  json.loads(conn.getresponse().read())
+    conn.request('GET', '/json/')
+    me =  json.loads(conn.getresponse().read())
 
-  conn.close()
-  return haversine(float(res['latitude']), float(res['longitude']), float(me['latitude']), float(me['longitude']))
+    conn.close()
+    return haversine(float(res['latitude']), float(res['longitude']), float(me['latitude']), float(me['longitude']))
 
 # This method is by Ross Allen, @ssorallen on github
 def haversine(lon1, lat1, lon2, lat2):
-  """
-  Calculate the great circle distance between two points 
-  on the earth (specified in decimal degrees)
-  """
-  # convert decimal degrees to radians 
-  lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+    """
+    Calculate the great circle distance between two points 
+    on the earth (specified in decimal degrees)
+    """
+    # convert decimal degrees to radians 
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
 
-  # haversine formula 
-  dlon = lon2 - lon1 
-  dlat = lat2 - lat1 
-  a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
-  c = 2 * asin(sqrt(a)) 
+    # haversine formula 
+    dlon = lon2 - lon1 
+    dlat = lat2 - lat1 
+    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+    c = 2 * asin(sqrt(a)) 
 
-  # 6367 km is the radius of the Earth
-  km = 6367 * c
-  return int(km)
+    # 6367 km is the radius of the Earth
+    km = 6367 * c
+    return int(km)
 
 
 def compute(host):
