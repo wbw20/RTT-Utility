@@ -9,7 +9,6 @@ ICMP_CODE = socket.getprotobyname('icmp')
 UDP_CODE = socket.getprotobyname('udp')
 
 def ping(dest_name, ttl=30, port=33434):
-    print ttl
     inn = socket.socket(socket.AF_INET, socket.SOCK_RAW, ICMP_CODE)
     out = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, UDP_CODE)
     out.setsockopt(socket.SOL_IP, socket.IP_TTL, ttl)
@@ -31,14 +30,9 @@ def ping(dest_name, ttl=30, port=33434):
         out.close()
         inn.close()
 
-    if curr_addr is not None:
-        print "%s (%s)" % (curr_name, curr_addr)
-    else:
-        print "*"
-
     return curr_addr
 
-def binary_search(host):
+def count_hops_to(host):
     low = 0
     high = MAX_HOPS
 
@@ -46,27 +40,20 @@ def binary_search(host):
         ttl = high - (high - low)/2
         current = ping(host, ttl) # try reaching host with ttl number of hops
 
-        print current
-        print 'JKBDSKJFBDSKBFJ'
-
         if current == None: # ttl too high
             high = ttl
         elif current.find(host) != -1: # ttl just right
-            return;
+            return ttl;
         else: # ttl too low
             low = ttl
 
+    return -1
+
 def main(host):
     dest = socket.gethostbyname(host)
-    print dest
-    binary_search(dest)
-    # ttl = 1
+    count = count_hops_to(dest)
 
-    # while True:
-    #     curr_addr = ping(dest_name, ttl)
-    #     ttl += 1
-    #     if curr_addr == dest or ttl >= MAX_HOPS:
-    #         return
+    print "Hops to %s (%s)" % (host, count)
 
 if __name__ == "__main__":
-    main('www.mit.edu')
+    main('google.com')
